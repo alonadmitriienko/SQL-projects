@@ -1,0 +1,25 @@
+SELECT
+  sp.country,
+  COUNT (sp.ga_session_id) AS session_cnt
+FROM
+  `DA.session_params` sp
+JOIN 
+(
+  SELECT
+    ep.ga_session_id,
+    COUNT (*) AS session_cnt
+  FROM
+    `data-analytics-mate.DA.event_params` ep
+  GROUP BY
+    ep.ga_session_id
+  HAVING
+    COUNT (*) > 2
+  ORDER BY
+    COUNT (*) 
+) session_cnt_condition
+ON
+  sp.ga_session_id = session_cnt_condition.ga_session_id
+GROUP BY
+  sp.country
+ORDER BY
+  COUNT (sp.ga_session_id) DESC
